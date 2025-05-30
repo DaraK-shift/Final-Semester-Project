@@ -1,0 +1,55 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.io.*;
+
+public class Main {
+    static ArrayList<Song> songs = new ArrayList<>();
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Music Playlist Manager");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        frame.add(panel);
+
+        JButton addBtn = new JButton("Add Song");
+        JButton viewBtn = new JButton("View Songs");
+        JButton saveBtn = new JButton("Save");
+        JButton loadBtn = new JButton("Load");
+
+        panel.add(addBtn);
+        panel.add(viewBtn);
+        panel.add(saveBtn);
+        panel.add(loadBtn);
+
+        viewBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String result = "";
+                for (Song s : songs) {
+                    result += s.toString() + "\n";
+                }
+                if (result.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No songs added.");
+                } else {
+                    JOptionPane.showMessageDialog(null, result);
+                }
+            }
+        });
+    }
+}
+
+class Song {
+    String title;
+    String artist;
+
+    public Song(String title, String artist) {
+        this.title = title;
+        this.artist = artist;
+    }
+
+    public String toString() {
+        return title + " by " + artist;
+    }
+}
