@@ -4,30 +4,39 @@ import java.util.ArrayList;
 import java.io.*;
 
 public class Main {
-    static ArrayList<Song> songs = new ArrayList<>();
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Music Playlist Manager");
-        frame.setSize(400, 300);
+        frame.setSize(600, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
+        panel.setLayout(null);
         frame.add(panel);
 
         JButton addBtn = new JButton("Add Song");
+        addBtn.setBounds(130, 50, 150, 40);
+
         JButton viewBtn = new JButton("View Songs");
+        viewBtn.setBounds(320, 50, 150, 40);
+
         JButton saveBtn = new JButton("Save");
+        saveBtn.setBounds(130, 120, 150, 40);
+
         JButton loadBtn = new JButton("Load");
+        loadBtn.setBounds(320, 120, 150, 40);
+
 
         panel.add(addBtn);
         panel.add(viewBtn);
         panel.add(saveBtn);
         panel.add(loadBtn);
 
+
         viewBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String result = "";
-                for (Song s : songs) {
+                for (Song s : Playlist.songs) {
                     result += s.toString() + "\n";
                 }
                 if (result.isEmpty()) {
@@ -37,19 +46,129 @@ public class Main {
                 }
             }
         });
+
+        Playlist playlist = new Playlist();
+
+        viewBtn.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            String title = JOptionPane.showInputDialog("Enter song title:");
+            String artist = JOptionPane.showInputDialog("Enter artist:");
+            if (title != null && artist != null) {
+                playlist.addSong(new Song(title, artist));
+            }
+        }
+    });
+        frame.setVisible(true);
+
     }
 }
 
 class Song {
     String title;
     String artist;
+    boolean liked;
 
-    public Song(String title, String artist) {
-        this.title = title;
+    public Song(String title, String artist) { //Most of the time when you're adding a new song by hand,
+        this.title = title;                     //you're not choosing if it's liked yet.
         this.artist = artist;
+        this.liked = false; //by default it hasnt been liked yet
     }
 
-    public String toString() {
+    public String toString() {              //returns the String version of an object
         return title + " by " + artist;
+    }
+
+    public void like(){
+        liked = true;
+    }
+}
+
+class Playlist {
+    static ArrayList<Song> songs = new ArrayList<>();
+
+    public void addSong(Song song) {
+        songs.add(song);
+    }
+
+    public void removeSong(Song song) {
+        songs.remove(song);
+    }
+
+    public void sortSongs(ArrayList<Song> songs) {
+        for (int i = 1; i < songs.size(); i++) {
+            Song temp = songs.get(i);
+            int possibleIndex = i;
+
+            while (possibleIndex > 0 && temp.title.compareToIgnoreCase(songs.get(possibleIndex - 1).title) < 0) {
+                songs.set(possibleIndex, songs.get(possibleIndex - 1));
+                possibleIndex--;
+
+            }
+            songs.set(possibleIndex, temp);
+        }
+    }
+}
+
+class Manager{
+    Playlist playlist;
+    int index;
+
+    public Manager(Playlist playlist) {
+        this.playlist = playlist;
+    }
+
+    public Song getCurrentSong() {
+        if (playlist.songs.size() == 0) {
+            return null;
+        } else {
+            return playlist.songs.get(index);
+        }
+    }
+
+    public void nextSong() {
+        if (playlist.songs.size() > 0)
+            index++;
+    }
+
+    public void pauseSong() {
+        System.out.println("Song paused.");     //??
+    }
+
+    public void restartSong() {
+        // ??
+    }
+
+
+
+    public void repeatSong() {
+        // ??
+    }
+}
+
+class FileHandling {
+    public static void saveSongs(ArrayList<Song> songs) {
+        try {
+            PrintWriter print = new PrintWriter("songs.txt");
+            for (Song s : songs) {
+                print.println(s.title + "," + s.artist + "," + s.liked);
+            }
+            print.close();
+        } catch (IOException e) {
+            System.out.println("Error saving.");
+        }
+    }
+
+    public static void loadSongs(ArrayList<Song> loaded) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("songs.txt"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                //??
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error loading.");
+        }
     }
 }
