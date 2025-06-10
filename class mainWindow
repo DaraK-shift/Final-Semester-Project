@@ -1,0 +1,242 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.table.DefaultTableModel;
+
+
+public class mainWindow extends JFrame {
+    Playlist playlist = new Playlist();
+    Manager manager = null;
+
+
+    public mainWindow(){
+        this.playlist = playlist;
+        this.manager = new Manager(playlist);
+
+
+        Color softGreen = new Color(11, 216, 152);
+
+
+        JFrame frame = new JFrame("Music Playlist Manager");
+        frame.setSize(800, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setBackground(Color.DARK_GRAY);
+
+
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Index", "Title", "Artist", "Genre", "Liked"}, 0);
+        JTable table = new JTable(model);
+        table.isDisplayable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(20, 20, 750, 220);
+        panel.add(scrollPane);
+
+        table.setBackground(Color.DARK_GRAY);
+        table.setForeground(Color.WHITE);
+        table.setGridColor(Color.WHITE);
+        table.getTableHeader().setBackground(Color.DARK_GRAY);
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        table.setShowGrid(true);
+        scrollPane.getViewport().setBackground(Color.DARK_GRAY);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+
+
+        JButton sortBtn = new JButton();
+        sortBtn.setBounds(20, 265, 70, 60);
+        sortBtn.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("724871.png")).getImage().getScaledInstance(50, 50,  Image.SCALE_SMOOTH)));
+        sortBtn.setBackground(Color.DARK_GRAY);
+
+
+        JButton play = new JButton("Play/pause");
+        play.setForeground(Color.WHITE);
+        play.setBounds(295, 265, 200, 60);
+        play.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("12483065.png")).getImage().getScaledInstance(50, 50,  Image.SCALE_SMOOTH)));
+        play.setBackground(Color.DARK_GRAY);
+
+
+        JButton skipBtn = new JButton();
+        skipBtn.setBounds(500, 265, 70, 60);
+        skipBtn.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("skip.png")).getImage().getScaledInstance(50, 50,  Image.SCALE_SMOOTH)));
+        skipBtn.setBackground(Color.DARK_GRAY);
+
+
+        JLabel timeline = new JLabel();
+        timeline.setBounds(70, 320, 750, 100);
+        ImageIcon icon = new ImageIcon(new ImageIcon(getClass().getResource("sound wave.png")).getImage().getScaledInstance(650, 85, Image.SCALE_SMOOTH));
+        timeline.setIcon(icon);
+
+
+        JButton like = new JButton();
+        like.setBounds(220, 265, 70, 60);
+        like.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("1f49a_color.png")).getImage().getScaledInstance(50, 50,  Image.SCALE_SMOOTH)));
+        like.setBackground(Color.DARK_GRAY);
+
+
+        JButton addBtn = new JButton("Add Song");
+        addBtn.setBackground(softGreen);
+        addBtn.setBounds(30, 400, 150, 40);
+
+        JButton removeBtn = new JButton("Remove Songs");
+        removeBtn.setBackground(softGreen);
+        removeBtn.setBounds(600, 400, 150, 40);
+
+        JButton saveBtn = new JButton("Save");
+        saveBtn.setBackground(softGreen);
+        saveBtn.setBounds(220, 400, 150, 40);
+
+        JButton loadBtn = new JButton("Load");
+        loadBtn.setBackground(softGreen);
+        loadBtn.setBounds(410, 400, 150, 40);
+
+
+
+
+        panel.add(addBtn);
+        panel.add(removeBtn);
+        panel.add(saveBtn);
+        panel.add(loadBtn);
+        panel.add(play);
+        panel.add(timeline);
+        panel.add(like);
+        panel.add(skipBtn);
+        panel.add(sortBtn);
+        frame.add(panel);
+
+
+
+
+
+        play.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            Song current = manager.getCurrentSong();
+            if (current != null) {
+                JOptionPane.showMessageDialog(null, "Now Playing: " + current.toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "No song to play.");
+            }
+        }
+        });
+
+
+
+
+        addBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                model.setRowCount(0);
+
+                String title = JOptionPane.showInputDialog("Enter song title:");
+                String artist = JOptionPane.showInputDialog("Enter artist:");
+                String genre = JOptionPane.showInputDialog("Enter genre:");
+                if (title != null && artist != null && genre != null) {
+                    playlist.addSong(new Song(title, artist, genre));
+                    int index = playlist.songs.size() - 1;
+                    for(Song s: playlist.getSongs()){
+                        model.addRow(new Object[]{index, s.getTitle(), s.getArtist(), s.getGenre(), s.isLiked()});
+                    }
+                }
+            }
+        });
+
+
+
+
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                FileHandling.saveSongs(Playlist.songs);
+                JOptionPane.showMessageDialog(null, "Songs were saved successfully.");
+            }
+        });
+
+
+
+
+        loadBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                FileHandling.loadSongs(Playlist.songs);
+                JOptionPane.showMessageDialog(null, "Songs loaded successfully.");
+            }
+        });
+
+
+
+
+        like.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                        Song current = manager.getCurrentSong();
+                        if (current != null) {
+                            current.like();
+                            JOptionPane.showMessageDialog(null, "You liked: " + current.title + " by " + current.artist);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No song selected to like.");
+                        }
+                model.setRowCount(0);
+                int index = playlist.songs.size() - 1;
+                for(Song s: playlist.getSongs()){
+                    model.addRow(new Object[]{index, s.getTitle(), s.getArtist(), s.getGenre(), s.isLiked()});
+                }
+
+            }
+                });
+
+
+
+
+        skipBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                manager.nextSong();
+                Song current = manager.getCurrentSong();
+                if (current != null) {
+                    JOptionPane.showMessageDialog(null, "Now playing: " + current.toString());
+                } else {
+                    JOptionPane.showMessageDialog(null, "No more songs.");
+                }
+            }
+        });
+
+
+
+
+        removeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0 && selectedRow < playlist.songs.size()) {
+                    playlist.songs.remove(selectedRow);
+                    model.removeRow(selectedRow);
+                    for (int i = 0; i < model.getRowCount(); i++) {
+                        model.setValueAt(i, i, 0);
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Selected song removed.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a song from the table.");
+                }
+            }
+        });
+
+
+
+
+
+        sortBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Playlist.sortSongs(playlist.songs);
+                model.setRowCount(0);
+
+                for (int i = 0; i < playlist.songs.size(); i++) {
+                    Song s = playlist.songs.get(i);
+                    model.addRow(new Object[]{i, s.getTitle(), s.getArtist(), s.getGenre(), s.isLiked()});
+                }
+            }
+        });
+
+
+
+        frame.setVisible(true);
+
+    }
+    }
