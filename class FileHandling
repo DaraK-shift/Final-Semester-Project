@@ -1,0 +1,40 @@
+import java.util.ArrayList;
+import java.io.*;
+import java.util.LinkedList;
+
+class FileHandling {
+    public static void saveSongs(ArrayList<Song> songs) {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("songs.dat"));
+            for (Song s : songs) {
+                out.writeObject(s);
+            }
+            out.close();
+            System.out.println("Songs saved successfully.");
+        } catch (IOException e) {
+            System.out.println("Error saving: " + e.getMessage());
+        }
+    }
+
+    public static LinkedList<Song> loadSongs(ArrayList<Song> songs) {
+        LinkedList<Song> songList = new LinkedList<>();
+        try {
+            ObjectInputStream reader = new ObjectInputStream(new FileInputStream("songs.dat"));
+            try{
+                while (true){
+                    Song s = (Song) reader.readObject();
+                    songList.add(s);
+                }
+            }catch(EOFException | ClassNotFoundException e){
+                System.out.println(e.getMessage());
+            }
+
+            reader.close();
+            System.out.println("Songs loaded successfully.");
+        } catch (IOException e) {
+            System.out.println("Error loading." + e.getMessage());
+        }
+        return songList;
+    }
+}
+
