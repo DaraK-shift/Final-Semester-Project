@@ -1,0 +1,39 @@
+import java.io.Serializable;
+
+
+class Song implements Serializable{
+    String title;
+    String artist;
+    String genre;
+    boolean liked;
+
+    public Song(String title, String artist, String genre) {
+        this.artist = artist;
+        this.genre = genre;
+        this.liked = false;
+    }
+
+    public String toString() {
+        return title + " by " + artist + " genre: " + genre;
+    }
+
+    public void like(){
+        liked = true;
+    }
+
+    public String getTitle(){
+        return title;
+    }
+
+    public String getArtist(){
+        return artist;
+    }
+
+    public String getGenre(){
+        return genre;
+    }
+
+    public boolean isLiked(){
+        return liked;
+    }
+}
