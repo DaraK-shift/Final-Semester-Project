@@ -1,0 +1,27 @@
+
+
+class Manager{
+    Playlist playlist;
+    int index;
+
+    public Manager(Playlist playlist) {
+        this.playlist = playlist;
+    }
+
+    public Song getCurrentSong() {
+        if (playlist.songs.size() == 0) {
+            return null;
+        } else {
+            return playlist.songs.get(index);
+        }
+    }
+
+    public void nextSong() {
+        if (playlist.songs.size() > 0)
+            index++;
+    }
+
+    public void pauseSong() {
+        System.out.println("Song paused.");     //??
+    }
+}
